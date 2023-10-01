@@ -1,0 +1,28 @@
+canvas.roullet {
+    transition: 2s;
+    z-index: 1;
+    pointer-events: none;
+  }
+  
+  button.roullet {
+    background: #febf00;
+    margin-top: 1rem;
+    padding: .8rem 1.8rem;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: .2s;
+    cursor: pointer;
+    z-index: 2;
+  }
+  
+  button.roullet:active {
+    background: #444;
+    color: #f9f9f9;
+    z-index: 2;
+  }
+
+div.roullet {
+    width: 380px;
+}
