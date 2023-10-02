@@ -9,15 +9,15 @@ export const selectSlice = createSlice({
         top: (state) => {
             return state.value[0]
         },
-        insert: (state, action) => {
-            state.value = state.value.push(action.payload);
+        push: (state, action) => {
+            state.value = state.value.concat(action.payload);
         },
-        remove: (state) => {
-            state.value.shift();
-        }
+        pop: (state) => {
+            state.value = state.value.splice(1);
+        },
     }
 })
 
-export const { top, insert, remove } = selectSlice.actions
+export const { top, push, pop } = selectSlice.actions
 
 export default selectSlice.reducer

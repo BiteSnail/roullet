@@ -2,7 +2,7 @@ import { Button } from "react-bootstrap";
 import '../css/Roullet.css';
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { remove, top } from "../features/fields/selectSlice";
+import { pop, top } from "../features/fields/selectSlice";
 import { select } from "../features/fields/fieldSlice";
 
 const colors = ["#dc0936", "#e6471d", "#f7a416", "#efe61f ", "#60b236", "#209b6c", "#169ed8", "#3f297e", "#87207b", "#be107f", "#e7167b"];
@@ -21,13 +21,19 @@ function Roullet() {
         const ctx = c.getContext('2d');
 
         const [cw, ch] = [c.width / 2, c.height / 2];
-        const arc = Math.PI / (fields.length / 2);
+        const totalSize = fields.reduce(function add(sum, curValue){
+            return sum + Number(curValue.size);
+        }, 0);
+
+        const arc = Math.PI / (totalSize / 2);
+        let last = 0;
     
         for (let i = 0; i < fields.length; i++) {
             ctx.beginPath();
             ctx.fillStyle = colors[i % (colors.length -1)];
             ctx.moveTo(cw, ch);
-            ctx.arc(cw, ch, cw, arc * (i - 1), arc * i);
+            ctx.arc(cw, ch, cw, arc * last, arc * (last+Number(fields[i].size)));
+            last += Number(fields[i].size);
             ctx.fill();
             ctx.closePath();
         }
@@ -36,9 +42,11 @@ function Roullet() {
         ctx.font = "18px Pretendard";
         ctx.textAlign = "center";
 
-        for (let i = 0; i < fields.length; i++) {
-            const angle = (arc * i) + (arc / 2);
+        last = 0;
 
+        for (let i = 0; i < fields.length; i++) {
+            const angle = (arc * last) + (arc*fields[i].size / 2);
+            last += Number(fields[i].size);
             ctx.save();
 
             ctx.translate(
@@ -69,22 +77,32 @@ function Roullet() {
         setTimeout(()=> {
             let ran = 0;
             if(selects.length > 0){
-                ran = dispatch(top()) % selects.length;
-                dispatch(remove());
+                const fieldId = selects[0];
+                ran = fields.findIndex(f => f.id==fieldId);
+                if(ran<0)
+                    ran = 0;
+                dispatch(pop());
             }
             else{
                 ran = Math.floor(Math.random() * fields.length);
             }
 
-            const arc = 360 / (fields.length);
-            // const rotate = (ran * arc) + 3600 + (arc * 3) - (arc / 4);
-            const rotate = 90 + (ran* arc) + 3600 + (arc * (Math.random()));
+
+            const totalSize = fields.reduce(function add(sum, curValue){
+                return sum + Number(curValue.size);
+            }, 0);
+
+            const arc = 360 / (totalSize);
+
+            const curSize = fields.slice(0, ran).reduce(function add(sum, curValue){
+                return sum + Number(curValue.size);
+            }, 0);
+            const rotate = 90 + (curSize * arc) + 3600 + (arc * (Math.random()));
             
             c.style.transform = `rotate(-${rotate}deg)`;
             c.style.transition = `2s`;
             
             setTimeout(() => {
-                // alert(`오늘의 야식은?! ${fields[ran]} 어떠신가요?`)
                 setValue(fields[ran].name);
                 dispatch(select(ran));
             }, 2000);
