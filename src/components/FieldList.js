@@ -57,9 +57,9 @@ function FieldList(){
                         as="li"
                         className="d-flex justify-content-between align-items-start"
                         key={"field"+field.id}
-                        onClick={() => {dispatch(push(field.id))}}
                     >
-                        <div className="ms-2 me-auto">
+                        <div className="ms-2 me-auto"
+                        onClick={() => {dispatch(push(field.id))}}>
                             {field.name}
                         </div>
                         <SizeInput field={field}/>

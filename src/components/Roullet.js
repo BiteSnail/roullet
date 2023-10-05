@@ -76,6 +76,9 @@ function Roullet() {
 
         setTimeout(()=> {
             let ran = 0;
+            const totalSize = fields.reduce(function add(sum, curValue){
+                return sum + Number(curValue.size);
+            }, 0);
             if(selects.length > 0){
                 const fieldId = selects[0];
                 ran = fields.findIndex(f => f.id==fieldId);
@@ -84,23 +87,26 @@ function Roullet() {
                 dispatch(pop());
             }
             else{
-                ran = Math.floor(Math.random() * fields.length);
+                let ranVal = Math.floor(Math.random() * totalSize);
+                for(let i = 0;i<fields.length;i++){
+                    ranVal -= fields[i].size;
+                    if(ranVal<=0){
+                        ran = i;
+                        break;
+                    }
+                }
             }
 
-
-            const totalSize = fields.reduce(function add(sum, curValue){
-                return sum + Number(curValue.size);
-            }, 0);
 
             const arc = 360 / (totalSize);
 
             const curSize = fields.slice(0, ran).reduce(function add(sum, curValue){
                 return sum + Number(curValue.size);
             }, 0);
-            const rotate = 90 + (curSize * arc) + 3600 + (arc * (Math.random()));
+            const rotate = 90 + (curSize * arc) + 7200 + (arc * (Math.random()));
             
             c.style.transform = `rotate(-${rotate}deg)`;
-            c.style.transition = `2s`;
+            c.style.transition = `5s`;
             
             setTimeout(() => {
                 setValue(fields[ran].name);
